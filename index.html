@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gokuldham.fun - The TMKOC Arcade</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #FFFBEB; /* Light warm background */
+            background-image: radial-gradient(#FCD34D 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .comic-font {
+            font-family: 'Comic Neue', cursive;
+        }
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #F59E0B;
+            border-radius: 5px;
+        }
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+        }
+        /* Animations */
+        @keyframes bounce-slow {
+            0%, 100% { transform: translateY(-5%); }
+            50% { transform: translateY(5%); }
+        }
+        .animate-bounce-slow {
+            animation: bounce-slow 3s infinite;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #F59E0B;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Background Music Audio Tag -->
+    <audio id="bgMusic" loop>
+        <source src="https://ia801600.us.archive.org/12/items/TaarakMehtaKaOoltahChashmahTitleSong/Taarak%20Mehta%20Ka%20Ooltah%20Chashmah%20Title%20Song.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Navbar -->
+    <nav class="bg-yellow-400 border-b-4 border-yellow-600 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <!-- Logo Image -->
+                    <div class="bg-white p-1 rounded-lg border-2 border-black shadow-sm">
+                        <img 
+                            src="https://upload.wikimedia.org/wikipedia/en/c/c7/Taarak_Mehta_Ka_Ooltah_Chashmah_Logo.png" 
+                            alt="TMKOC Logo" 
+                            class="h-10 md:h-12 w-auto object-contain"
+                            onerror="this.src='https://via.placeholder.com/150x50?text=TMKOC+Logo'"
+                        >
+                    </div>
+                    <span class="hidden md:inline-block text-xl font-extrabold tracking-tight text-red-600 comic-font">Gokuldham<span class="text-blue-600">.fun</span></span>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- Music Toggle Button -->
+                    <button onclick="toggleMusic()" id="musicBtn" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full shadow border-b-2 border-yellow-800 transition flex items-center gap-2">
+                        <span>🔇</span> Music Off
+                    </button>
+
+                    <div class="hidden md:flex space-x-4 font-bold text-yellow-900">
+                        <a href="#" class="hover:text-white transition">Home</a>
+                        <a href="#games" class="hover:text-white transition">Games</a>
+                        <a href="#ai-chat" class="hover:text-white transition">AI Chat ✨</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="bg-blue-500 text-white overflow-hidden relative">
+        <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+        <div class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center relative z-10">
+            <div class="md:w-1/2 text-center md:text-left mb-8 md:mb-0">
+                <h1 class="text-4xl md:text-6xl font-extrabold mb-4 text-yellow-300 drop-shadow-md">Ooltah Chashmah, <br><span class="text-white">Seedha Fun!</span></h1>
+                <p class="text-xl mb-6 font-medium">Welcome to your Gokuldham Game Library. Add your own society adventures or chat with AI characters!</p>
+                <a href="#games" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 border-b-4 border-red-700">
+                    Browse Library 🎮
+                </a>
+            </div>
+            <div class="md:w-1/2 flex justify-center relative">
+                <div class="relative w-64 h-64 bg-white rounded-full flex items-center justify-center border-8 border-yellow-400 shadow-2xl animate-bounce-slow">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/c/c7/Taarak_Mehta_Ka_Ooltah_Chashmah_Logo.png" class="w-48 opacity-80" alt="Mascot">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chat Section -->
+    <div id="ai-chat" class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8 bg-yellow-50 rounded-3xl mt-8 border-4 border-yellow-200">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-indigo-900 inline-block border-b-4 border-indigo-400 pb-2">
+                Live Society Interactions ✨
+            </h2>
+            <p class="mt-4 text-lg text-gray-600">Talk to your favorite characters powered by Gemini AI!</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <!-- AI Feature 1: Popatlal -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg border-l-8 border-pink-500 flex flex-col items-center text-center hover:scale-105 transition transform">
+                <div class="text-6xl mb-4 bg-pink-100 p-4 rounded-full">☂️</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Popatlal's Rishta Maker</h3>
+                <p class="text-gray-600 text-sm mb-4">Need to get married? Let the Golden Crow Award Winner write your bio!</p>
+                <button onclick="openGeminiFeature('popatlal')" class="mt-auto bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-6 rounded-full shadow-md">
+                    Create Bio ✨
+                </button>
+            </div>
+
+            <!-- AI Feature 2: Taarak Mehta -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg border-l-8 border-indigo-500 flex flex-col items-center text-center hover:scale-105 transition transform">
+                <div class="text-6xl mb-4 bg-indigo-100 p-4 rounded-full">🖊️</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Ask Mehta Sahab</h3>
+                <p class="text-gray-600 text-sm mb-4">Stuck in life? Get wisdom and a 'Shayari' from the Fire Brigade.</p>
+                <button onclick="openGeminiFeature('taarak')" class="mt-auto bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-6 rounded-full shadow-md">
+                    Get Advice ✨
+                </button>
+            </div>
+
+            <!-- AI Feature 3: Jethalal -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg border-l-8 border-red-500 flex flex-col items-center text-center hover:scale-105 transition transform">
+                <div class="text-6xl mb-4 bg-red-100 p-4 rounded-full">📺</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Jethalal's Jugaad</h3>
+                <p class="text-gray-600 text-sm mb-4">Broken TV? Mobile issue? Jethalal has a "Special Scheme" for you.</p>
+                <button onclick="openGeminiFeature('jethalal')" class="mt-auto bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-full shadow-md">
+                    Fix It ✨
+                </button>
+            </div>
+
+            <!-- AI Feature 4: Dayaben -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg border-l-8 border-yellow-500 flex flex-col items-center text-center hover:scale-105 transition transform">
+                <div class="text-6xl mb-4 bg-yellow-100 p-4 rounded-full">💃</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Dayaben's Garba Kitchen</h3>
+                <p class="text-gray-600 text-sm mb-4">Ask for weird food recipes or just talk about Garba! Hey Maa Mataji!</p>
+                <button onclick="openGeminiFeature('daya')" class="mt-auto bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-full shadow-md">
+                    Chat Now ✨
+                </button>
+            </div>
+
+            <!-- AI Feature 5: Bhide -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg border-l-8 border-green-600 flex flex-col items-center text-center hover:scale-105 transition transform">
+                <div class="text-6xl mb-4 bg-green-100 p-4 rounded-full">📝</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Bhide's Discipline</h3>
+                <p class="text-gray-600 text-sm mb-4">Late for rent? Broke a rule? Get scolded by the Ekmeva Secretary.</p>
+                <button onclick="openGeminiFeature('bhide')" class="mt-auto bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-full shadow-md">
+                    Confess ✨
+                </button>
+            </div>
+
+            <!-- AI Feature 6: Bapuji -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg border-l-8 border-orange-500 flex flex-col items-center text-center hover:scale-105 transition transform">
+                <div class="text-6xl mb-4 bg-orange-100 p-4 rounded-full">👴</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Bapuji's Sanskar</h3>
+                <p class="text-gray-600 text-sm mb-4">Feeling lazy? Let Champaklal scold the "Babuchak" out of you.</p>
+                <button onclick="openGeminiFeature('bapuji')" class="mt-auto bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-full shadow-md">
+                    Get Wisdom ✨
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Games Grid (Placeholders) -->
+    <div id="games" class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 inline-block border-b-4 border-yellow-400 pb-2">Game Library</h2>
+            <p class="mt-4 text-lg text-gray-600">These boxes are ready for your custom games!</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <!-- Slot 1 -->
+            <div class="game-card bg-white rounded-2xl overflow-hidden shadow-lg border-2 border-gray-100 flex flex-col h-full transition-all duration-300">
+                <div class="h-48 bg-gray-200 flex items-center justify-center relative overflow-hidden group">
+                    <span class="text-8xl text-gray-400 group-hover:scale-110 transition">1</span>
+                </div>
+                <div class="p-6 flex-1 flex flex-col">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Add Game Title 1</h3>
+                    <p class="text-gray-600 mb-4 text-sm">Description for your first game goes here. Maybe something about Jethalal?</p>
+                    <div class="mt-auto">
+                        <button onclick="openGame('slot1')" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-xl shadow transition border-b-4 border-blue-700 active:border-b-0 active:translate-y-1">
+                            Play
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slot 2 -->
+            <div class="game-card bg-white rounded-2xl overflow-hidden shadow-lg border-2 border-gray-100 flex flex-col h-full transition-all duration-300">
+                <div class="h-48 bg-gray-200 flex items-center justify-center relative overflow-hidden group">
+                    <span class="text-8xl text-gray-400 group-hover:scale-110 transition">2</span>
+                </div>
+                <div class="p-6 flex-1 flex flex-col">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Add Game Title 2</h3>
+                    <p class="text-gray-600 mb-4 text-sm">Description for your second game. Maybe a Bhide scooter challenge?</p>
+                    <div class="mt-auto">
+                        <button onclick="openGame('slot2')" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-xl shadow transition border-b-4 border-green-700 active:border-b-0 active:translate-y-1">
+                            Play
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slot 3 -->
+            <div class="game-card bg-white rounded-2xl overflow-hidden shadow-lg border-2 border-gray-100 flex flex-col h-full transition-all duration-300">
+                <div class="h-48 bg-gray-200 flex items-center justify-center relative overflow-hidden group">
+                    <span class="text-8xl text-gray-400 group-hover:scale-110 transition">3</span>
+                </div>
+                <div class="p-6 flex-1 flex flex-col">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Add Game Title 3</h3>
+                    <p class="text-gray-600 mb-4 text-sm">Description for your third game. Maybe Popatlal's marriage quest?</p>
+                    <div class="mt-auto">
+                        <button onclick="openGame('slot3')" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded-xl shadow transition border-b-4 border-pink-700 active:border-b-0 active:translate-y-1">
+                            Play
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slot 4 -->
+            <div class="game-card bg-white rounded-2xl overflow-hidden shadow-lg border-2 border-gray-100 flex flex-col h-full transition-all duration-300">
+                <div class="h-48 bg-gray-200 flex items-center justify-center relative overflow-hidden group">
+                    <span class="text-8xl text-gray-400 group-hover:scale-110 transition">4</span>
+                </div>
+                <div class="p-6 flex-1 flex flex-col">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Add Game Title 4</h3>
+                    <p class="text-gray-600 mb-4 text-sm">Description for your fourth game. Tapu Sena cricket?</p>
+                    <div class="mt-auto">
+                        <button onclick="openGame('slot4')" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-xl shadow transition border-b-4 border-orange-700 active:border-b-0 active:translate-y-1">
+                            Play
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slot 5 -->
+            <div class="game-card bg-white rounded-2xl overflow-hidden shadow-lg border-2 border-gray-100 flex flex-col h-full transition-all duration-300">
+                <div class="h-48 bg-gray-200 flex items-center justify-center relative overflow-hidden group">
+                    <span class="text-8xl text-gray-400 group-hover:scale-110 transition">5</span>
+                </div>
+                <div class="p-6 flex-1 flex flex-col">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Add Game Title 5</h3>
+                    <p class="text-gray-600 mb-4 text-sm">Description for your fifth game. Dr. Hathi's feast?</p>
+                    <div class="mt-auto">
+                        <button onclick="openGame('slot5')" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-xl shadow transition border-b-4 border-indigo-700 active:border-b-0 active:translate-y-1">
+                            Play
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slot 6 -->
+            <div class="game-card bg-white rounded-2xl overflow-hidden shadow-lg border-2 border-gray-100 flex flex-col h-full transition-all duration-300">
+                <div class="h-48 bg-gray-200 flex items-center justify-center relative overflow-hidden group">
+                    <span class="text-8xl text-gray-400 group-hover:scale-110 transition">6</span>
+                </div>
+                <div class="p-6 flex-1 flex flex-col">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Add Game Title 6</h3>
+                    <p class="text-gray-600 mb-4 text-sm">Description for your sixth game. Daya's Garba?</p>
+                    <div class="mt-auto">
+                        <button onclick="openGame('slot6')" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-xl shadow transition border-b-4 border-red-700 active:border-b-0 active:translate-y-1">
+                            Play
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Game Modal Template -->
+    <div id="gameModal" class="fixed inset-0 modal-backdrop z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
+            <!-- Modal Header -->
+            <div class="bg-gray-900 text-white p-4 flex justify-between items-center">
+                <h3 id="modalTitle" class="text-xl font-bold text-yellow-400">Game Title</h3>
+                <button onclick="closeGame()" class="text-gray-400 hover:text-white focus:outline-none">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <!-- Game Canvas Container -->
+            <div id="gameContainer" class="bg-gray-800 flex-1 relative flex items-center justify-center overflow-hidden min-h-[400px]">
+                <canvas id="gameCanvas" class="max-w-full max-h-full shadow-lg"></canvas>
+                
+                <!-- Start Overlay -->
+                <div id="startScreen" class="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center text-white text-center p-8">
+                    <h2 class="text-4xl font-bold mb-4 text-yellow-400">Placeholder Game</h2>
+                    <p class="mb-8 text-lg max-w-md">This is a placeholder. You need to add your Javascript logic!</p>
+                    <button onclick="alert('Add your game logic in the script tag!')" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full text-xl shadow-lg transform transition hover:scale-110">
+                        Start Game
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gemini Feature Modal -->
+    <div id="geminiModal" class="fixed inset-0 modal-backdrop z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <!-- Header -->
+            <div class="bg-indigo-900 text-white p-4 flex justify-between items-center">
+                <h3 id="geminiModalTitle" class="text-xl font-bold text-yellow-400 flex items-center gap-2">
+                    <span>✨</span> AI Feature
+                </h3>
+                <button onclick="closeGeminiFeature()" class="text-gray-400 hover:text-white focus:outline-none">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6 flex-1 overflow-y-auto bg-gray-50">
+                <div class="text-center mb-6">
+                    <span id="geminiIcon" class="text-6xl block mb-2">🤖</span>
+                    <p id="geminiDesc" class="text-gray-600">Description goes here.</p>
+                </div>
+
+                <!-- Input Area -->
+                <div id="geminiInputArea" class="mb-6">
+                    <label id="geminiLabel" class="block text-gray-700 text-sm font-bold mb-2" for="geminiInput">
+                        Tell us about yourself:
+                    </label>
+                    <textarea id="geminiInput" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 transition" rows="3" placeholder="Type here..."></textarea>
+                    <button onclick="triggerGemini()" class="mt-4 w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg transform transition hover:scale-105">
+                        Generate Magic ✨
+                    </button>
+                </div>
+
+                <!-- Loading State -->
+                <div id="geminiLoading" class="hidden flex-col items-center justify-center py-8">
+                    <div class="loader mb-4"></div>
+                    <p class="text-gray-500 animate-pulse">Thinking...</p>
+                </div>
+
+                <!-- Result Area -->
+                <div id="geminiResult" class="hidden bg-white border-l-4 border-yellow-400 p-4 rounded shadow-sm">
+                    <p id="geminiOutput" class="text-gray-800 whitespace-pre-wrap font-medium"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="font-comic text-xl mb-2 text-yellow-400">Gokuldham Society</p>
+            <p class="text-gray-500 text-sm">Made for fun. Not affiliated with the official show. Just a fan tribute!</p>
+            <div class="mt-4 text-2xl space-x-4">
+                <span>👓</span><span>👘</span><span>🏏</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- GEMINI API CONFIG ---
+        const apiKey = ""; // API Key injected at runtime
+        let currentGeminiMode = ''; 
+
+        function openGeminiFeature(mode) {
+            currentGeminiMode = mode;
+            const modal = document.getElementById('geminiModal');
+            const title = document.getElementById('geminiModalTitle');
+            const icon = document.getElementById('geminiIcon');
+            const desc = document.getElementById('geminiDesc');
+            const label = document.getElementById('geminiLabel');
+            const input = document.getElementById('geminiInput');
+            const result = document.getElementById('geminiResult');
+            const loading = document.getElementById('geminiLoading');
+
+            modal.classList.remove('hidden');
+            result.classList.add('hidden');
+            loading.classList.add('hidden');
+            input.value = '';
+
+            if (mode === 'popatlal') {
+                title.innerHTML = "<span>☂️</span> Popatlal's Rishta Maker";
+                icon.innerText = "☂️";
+                desc.innerText = "Popatlal will write a desperate yet funny matrimonial bio for you.";
+                label.innerText = "Describe yourself (Job, Hobbies):";
+                input.placeholder = "e.g. Engineer, likes Dhokla, hates loud noises...";
+            } else if (mode === 'taarak') {
+                title.innerHTML = "<span>🖊️</span> Ask Mehta Sahab";
+                icon.innerText = "🖊️";
+                desc.innerText = "Ask the Fire Brigade for advice on any life problem.";
+                label.innerText = "What is your problem?";
+                input.placeholder = "e.g. My boss shouts at me...";
+            } else if (mode === 'jethalal') {
+                title.innerHTML = "<span>📺</span> Jethalal's Jugaad";
+                icon.innerText = "📺";
+                desc.innerText = "Got a broken item? Jethalal will give a 'Scheme' to fix or sell it.";
+                label.innerText = "What is the item/issue?";
+                input.placeholder = "e.g. Broken Umbrella...";
+            } else if (mode === 'daya') {
+                title.innerHTML = "<span>💃</span> Dayaben's Chat";
+                icon.innerText = "💃";
+                desc.innerText = "Talk to Daya about Garba, recipes, or just say Hello!";
+                label.innerText = "What do you want to ask Daya?";
+                input.placeholder = "e.g. Can I get a recipe for Dhokla?";
+            } else if (mode === 'bhide') {
+                title.innerHTML = "<span>📝</span> Bhide's Discipline";
+                icon.innerText = "📝";
+                desc.innerText = "Confess a mistake or ask for permission. Beware of the Secretary!";
+                label.innerText = "What did you do / want?";
+                input.placeholder = "e.g. Can I play cricket in society?";
+            } else if (mode === 'bapuji') {
+                title.innerHTML = "<span>👴</span> Bapuji's Sanskar";
+                icon.innerText = "👴";
+                desc.innerText = "Get a life lesson (and a scolding) from Champaklal Gada.";
+                label.innerText = "Confess your laziness/mistake:";
+                input.placeholder = "e.g. I woke up at 11 AM today...";
+            }
+        }
+
+        function closeGeminiFeature() {
+            document.getElementById('geminiModal').classList.add('hidden');
+        }
+
+        async function triggerGemini() {
+            const input = document.getElementById('geminiInput').value;
+            if (!input.trim()) return;
+
+            const loading = document.getElementById('geminiLoading');
+            const resultArea = document.getElementById('geminiResult');
+            const output = document.getElementById('geminiOutput');
+
+            loading.classList.remove('hidden');
+            resultArea.classList.add('hidden');
+            
+            let prompt = "";
+            if (currentGeminiMode === 'popatlal') {
+                prompt = `You are Popatlal from TMKOC. User description: "${input}". Write a funny matrimonial bio. Use catchphrases like "Duniya Hila Dunga", "Cancel". Keep it under 100 words.`;
+            } else if (currentGeminiMode === 'taarak') {
+                prompt = `You are Taarak Mehta from TMKOC. User problem: "${input}". Give wise advice and a Hindi Shayari. Keep it under 100 words.`;
+            } else if (currentGeminiMode === 'jethalal') {
+                prompt = `You are Jethalal Gada. User item: "${input}". Give a funny solution or sales scheme. Mention Nattu Kaka/Bagha. Use Jethalal's English style.`;
+            } else if (currentGeminiMode === 'daya') {
+                prompt = `You are Daya Jethalal Gada from TMKOC. You are innocent, energetic, and love Garba. Refer to Jethalal as "Tapu ke Papa". User asks: "${input}". Reply in a funny, high-pitched enthusiastic way. Add "Hey Maa Mataji!" and mention Garba.`;
+            } else if (currentGeminiMode === 'bhide') {
+                prompt = `You are Aatmaram Tukaram Bhide (Ekmeva Secretary). User says: "${input}". Scold them for lack of discipline. Mention "Hamare zamane mein", "Maintenance Cheque", or "Sakharam". Be strict but funny.`;
+            } else if (currentGeminiMode === 'bapuji') {
+                prompt = `You are Champaklal Gada (Bapuji). User confesses: "${input}". Scold them using words like "Babuchak" or "Gadheda". Then give a short, sweet moral lesson about life/family.`;
+            }
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+
+                const data = await response.json();
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Error generating response.";
+
+                loading.classList.add('hidden');
+                resultArea.classList.remove('hidden');
+                output.innerText = text;
+            } catch (error) {
+                console.error(error);
+                loading.classList.add('hidden');
+                resultArea.classList.remove('hidden');
+                output.innerText = "Arre bapre! Network issue. Please try again.";
+            }
+        }
+
+        // --- Global UI Logic ---
+        let canvas, ctx, gameWidth, gameHeight;
+        const bgMusic = document.getElementById('bgMusic');
+        let isMusicPlaying = false;
+
+        function toggleMusic() {
+            const btn = document.getElementById('musicBtn');
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                btn.innerHTML = '<span>🔇</span> Music Off';
+                btn.classList.replace('bg-green-600', 'bg-yellow-600');
+                btn.classList.replace('hover:bg-green-700', 'hover:bg-yellow-700');
+            } else {
+                bgMusic.play().catch(e => console.log("User interaction needed first"));
+                btn.innerHTML = '<span>🔊</span> Music On';
+                btn.classList.replace('bg-yellow-600', 'bg-green-600');
+                btn.classList.replace('hover:bg-yellow-700', 'hover:bg-green-700');
+            }
+            isMusicPlaying = !isMusicPlaying;
+        }
+
+        function initCanvas() {
+            canvas = document.getElementById('gameCanvas');
+            ctx = canvas.getContext('2d');
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Draw a placeholder background
+            ctx.fillStyle = '#333';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+            ctx.font = '30px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText("Game Canvas Ready", canvas.width/2, canvas.height/2);
+        }
+
+        function resizeCanvas() {
+            if (!canvas) return;
+            const container = document.getElementById('gameContainer');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight; 
+            gameWidth = canvas.width;
+            gameHeight = canvas.height;
+        }
+
+        function openGame(slotId) {
+            document.getElementById('gameModal').classList.remove('hidden');
+            document.getElementById('modalTitle').innerText = "Playing: " + slotId;
+            initCanvas();
+        }
+
+        function closeGame() {
+            document.getElementById('gameModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
