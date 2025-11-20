@@ -384,7 +384,7 @@
 
     <script>
         // --- GEMINI API CONFIG ---
-        const apiKey = ""; // API Key injected at runtime
+        const apiKey = "AIzaSyBMIU2x-nxqC83zzni4suQZiDSKu-iFFAA"; // Hardcoded Key
         let currentGeminiMode = ''; 
 
         function openGeminiFeature(mode) {
@@ -479,6 +479,10 @@
                     body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
                 });
 
+                if (!response.ok) {
+                    throw new Error('API Request Failed: ' + response.status);
+                }
+
                 const data = await response.json();
                 const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Error generating response.";
 
@@ -489,7 +493,7 @@
                 console.error(error);
                 loading.classList.add('hidden');
                 resultArea.classList.remove('hidden');
-                output.innerText = "Arre bapre! Network issue. Please try again.";
+                output.innerText = "Arre bapre! Check your internet connection. The AI is having trouble connecting.";
             }
         }
 
